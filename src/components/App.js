@@ -14,9 +14,34 @@ export class App extends Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
+        showModal: false,
+
   }
   
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+ componentDidUpdate(_, prevState) {
+    const nextContacts = this.state.contacts;
+    const prevContacts = prevState.contacts;
 
+    if (nextContacts !== prevContacts) {
+      localStorage.setItem('contacts', JSON.stringify(nextContacts));
+    }
+
+    if (nextContacts.length > prevContacts.length && prevContacts.length !== 0) {
+      this.toggleModal();
+    }
+  }
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
 
   changeFilter = (e) => {
     this.setState({ filter: e.currentTarget.value });
@@ -28,7 +53,6 @@ export class App extends Component {
     return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
   }
   
-///////////////////////////////////////
   addFreind = ({name, number}) => {    
     const { contacts } = this.state
     const contact = {
